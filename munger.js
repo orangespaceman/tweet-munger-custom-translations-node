@@ -14,16 +14,14 @@ function init(data) {
 		access_token_key: data['access_token_key'],
 		access_token_secret: data['access_token_secret']
 	});
-		
-	search('L4RPP');		
-}
 
-function search(searchString) {
-	console.log('searching for ' + searchString);
-	twit.search(searchString, function(data) {
-		console.log(util.inspect(data));
+	var params = new Object();
+	params.follow = data['originalTwitterAccount'];
+	twit.stream('statuses/filter', params, function(stream) {
+	    stream.on('data', function(data) {
+	        console.log(util.inspect(data));
+		});
 	});
-	setTimeout(function(){search(searchString);}, 1000);
 }
 
 module.exports.init = init;

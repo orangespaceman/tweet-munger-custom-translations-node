@@ -31,11 +31,11 @@ function init(data) {
 
 
   // get the user's ID from their name
-	twit.get('/users/show/' + data['originalTwitterAccount'] + '.json', function(data) {
-		console.log('user id for '+data.name+' ('+data.screen_name+') is: ' + data.id);
+  twit.get('/users/show/' + data['originalTwitterAccount'] + '.json', function(data) {
+    console.log('user id for '+data.name+' ('+data.screen_name+') is: ' + data.id);
 
     // connect to the stream
-		twit.stream('statuses/filter', {follow:data.id}, function(stream) {
+    twit.stream('statuses/filter', {follow:data.id}, function(stream) {
 
       console.log("connected to twitter stream, waiting for tweets");
       

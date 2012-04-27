@@ -19,9 +19,11 @@ function init(data) {
 }
 
 function search(searchString) {
+	console.log('searching for ' + searchString);
 	twit.search(searchString, function(data) {
 		console.log(util.inspect(data));
 	});
+	setTimeout(function(){search(searchString);}, 1000);
 }
 
 module.exports.init = init;

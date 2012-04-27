@@ -27,4 +27,6 @@ Setting up a new TweetMunger account will require a few steps:
   * *translations*: The custom translation library name to translate to
   * *twitterConsumerKey*, *twitterConsumerSecret*, *twitterConsumerOauthToken* and *twitterConsumerOauthSecret*: Twitter Authorisation tokens -  [Register a new app](https://dev.twitter.com/) for these
   
-  
+## Creds
+
+Built by Pete (@thegingerbloke), Chris (@csolar) and Dan (@danomurray) at the Lab for the Recently Possible (@L4RP) in Hove, UK, April 2012

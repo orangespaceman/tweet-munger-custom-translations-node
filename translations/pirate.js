@@ -249,7 +249,7 @@ function translate(str) {
   
   // replace words
   for (var translation in translations) {
-    var re = new RegExp(translation,"gi");
+    var re = new RegExp("\\b"+translation+"\\b","gi");
     str = str.replace(re, translations[translation]);
   }
 

@@ -24,7 +24,12 @@ function init(data) {
 	twit.stream('statuses/filter', params, function(stream) {
 	    stream.on('data', function(data) {
 	        console.log(util.inspect(data));
-	        translator.translate(data.text);
+	        var translated = translator.translate(data.text);
+			twit.updateStatus(translated,
+				function(data) {
+					console.log(util.inspect(data));
+				}
+			);	        
 		});
 	});
 }

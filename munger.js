@@ -1,4 +1,11 @@
 /*
  * The brains of the operation
  */
-module.exports = "";
+function init() {
+
+}
+
+
+module.exports = {
+  init: init
+};

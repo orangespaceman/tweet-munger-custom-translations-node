@@ -4,6 +4,7 @@
 
 var util = require('util'),
 		twitter = require('twitter'),
+		async = require('async'),
 		translator;
 	
 function init(data) {
@@ -21,21 +22,34 @@ function init(data) {
 
 	var params = new Object();
 	
-	twit.get('/users/show/' + data['originalTwitterAccount'] + '.json', function(data) {
-	    params.follow = data.id;
-		console.log('user id is: ' + params.follow);
-		twit.stream('statuses/filter', params, function(stream) {
-		    stream.on('data', function(data) {
-		        console.log(util.inspect(data));
-		        var translated = translator.translate(data.text);
-				twit.updateStatus(translated,
-					function(data) {
-						console.log(util.inspect(data));
-					}
-				);	        
+	async.waterfall([
+		function(callback){
+			twit.get('/users/show/' + data['originalTwitterAccount'] + '.json', function(data) {
+				callback(null, data);
 			});
+		},
+		function(data, callback){
+			params.follow = data.id;
+			console.log('user id is: ' + params.follow);
+			twit.stream('statuses/filter', params, function(stream) {
+				callback(null, stream);
+			});
+		},
+		function(stream, callback){
+			stream.on('data', function(data) {
+				callback(null, data);
+			});
+		},
+		function(data, callback){
+			console.log(util.inspect(data));
+	        var translated = translator.translate(data.text);
+			twit.updateStatus(translated, function(data) {
+					callback(null, data);
+			});
+		}
+		], function(err, result){
+			console.log(util.inspect(result));
 		});
-	});
 }
 
 module.exports.init = init;

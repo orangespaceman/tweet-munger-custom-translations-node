@@ -20,16 +20,20 @@ function init(data) {
 	});
 
 	var params = new Object();
-	params.follow = data['originalTwitterAccount'];
-	twit.stream('statuses/filter', params, function(stream) {
-	    stream.on('data', function(data) {
-	        console.log(util.inspect(data));
-	        var translated = translator.translate(data.text);
-			twit.updateStatus(translated,
-				function(data) {
-					console.log(util.inspect(data));
-				}
-			);	        
+	
+	twit.get('/users/show/' + data['originalTwitterAccount'] + '.json', function(data) {
+	    params.follow = data.id;
+		console.log('user id is: ' + params.follow);
+		twit.stream('statuses/filter', params, function(stream) {
+		    stream.on('data', function(data) {
+		        console.log(util.inspect(data));
+		        var translated = translator.translate(data.text);
+				twit.updateStatus(translated,
+					function(data) {
+						console.log(util.inspect(data));
+					}
+				);	        
+			});
 		});
 	});
 }

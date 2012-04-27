@@ -5,19 +5,13 @@ var munger     = require("./munger");//,
 //    translator = require("./pirate");
     
     munger.init({
-        consumer_key : "OkDRwz5gBGGIdMPRUS2kw",
-        consumer_secret: "15toQ2udzJXdFIysbKGK959Z4Vx40lL5z7WPD1wblQ",
-		access_token_key: "258811766-1rNhVMu3zvXB59d2cSceyq034EnSxHeunkdL3bo7",
-		access_token_secret: "gYWGtywbWuDvMDmNTQaRNGshNcO3aryjnAqQSdmSg",
+        consumer_key : "0wHuFLFsB8dKNI9GLMLQ",
+        consumer_secret: "Nv7DVpjfPv39HMmQ79uhfNJsXrfDfhqrqufDoN9co",
+		access_token_key: "564668417-KdKO7dPMDnCoxFxF1BiopPtDg9NPmudBSYk1WPnr",
+		access_token_secret: "2ILCOdV5Dy7fiH5d5EigsUQwhgOtMHnUy2k00xrfy3I",
 		originalTwitterAccount: "danomurray",
 		mungedTwitterAccount: "yyy",
 		userAgentAccount: "xxx@yyy.com",
-		newTweetCount : 10,
 		ignoreRetweets: true,
-		translations : "pirate",
-		twitterConsumerKey: "x",
-		twitterConsumerSecret : "x",
-		twitterConsumerOauthToken : "x",
-		twitterConsumerOauthSecret : "x"
-	//	translator: pirate
+		translations : "pirate"
     });

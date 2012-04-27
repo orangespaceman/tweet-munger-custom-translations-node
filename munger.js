@@ -3,26 +3,25 @@
  */
 
 var util = require('util'),
-	twitter = require('twitter');
+	twitter = require('twitter'),
+	twit;
 	
 function init(data) {
 	console.log(util.inspect(data));
-	 var twit = new twitter({
+	twit = new twitter({
 		consumer_key: data['consumer_key'],
 		consumer_secret: data['consumer_secret'],
 		access_token_key: data['access_token_key'],
 		access_token_secret: data['access_token_secret']
 	});
-	
-	// connect to twitter user stream
-	twit.stream('user', {track: data['originalTwitterAccount']}, function(stream) {
-	    stream.on('data', function(data) {
-	        console.log(util.inspect(data));
-	    });
-	    // Disconnect stream after five seconds
-	    //setTimeout(stream.destroy, 10000);
-	});
+		
+	search('L4RPP');		
 }
 
+function search(searchString) {
+	twit.search(searchString, function(data) {
+		console.log(util.inspect(data));
+	});
+}
 
 module.exports.init = init;

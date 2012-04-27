@@ -27,22 +27,28 @@ function init(data) {
     access_token_secret: data['access_token_secret']
   });
 
-  // connect to the stream
-	twit.stream('statuses/filter', {follow:data['originalTwitterAccount']}, function(stream) {
-    
-    // when a new tweet is detected
-    stream.on('data', function(data) {
-      console.log(util.inspect(data));
+
+  // get the user's ID from their name
+	twit.get('/users/show/' + data['originalTwitterAccount'] + '.json', function(data) {
+		console.log('user id is: ' + data.id);
+
+    // connect to the stream
+		twit.stream('statuses/filter', {follow:data.id}, function(stream) {
+      
+      // when a new tweet is detected
+      stream.on('data', function(data) {
+        console.log(util.inspect(data));
       
       // mung and repost
       var translated = translator.translate(data.text);
-      twit.updateStatus(translated,
-        function(data) {
-          console.log(util.inspect(data));
-        }
-      );
-    });
-  });
+				twit.updateStatus(translated,
+					function(data) {
+						console.log(util.inspect(data));
+					}
+				);
+			});
+		});
+	});
 }
 
 // export init method

@@ -4,7 +4,7 @@
 var munger = require("./munger");
     
 munger.init({
-  originalTwitterAccount  : "258811766",
+  originalTwitterAccount  : "L4RP",
   translations            : "pirate",
   consumer_key            : "0wHuFLFsB8dKNI9GLMLQ",
   consumer_secret         : "Nv7DVpjfPv39HMmQ79uhfNJsXrfDfhqrqufDoN9co",

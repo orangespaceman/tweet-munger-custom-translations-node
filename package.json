@@ -8,7 +8,8 @@
     "url": "git://github.com/thegingerbloke/Tweet-Munger-Custom-Translations-Node.git"
   },
   "dependencies": {
-  	"twitter" : "0.1.18"  
+  	"twitter" : "0.1.18",
+  	"async" : "0.1.18"
   },
   "devDependencies": {},
   "optionalDependencies": {},

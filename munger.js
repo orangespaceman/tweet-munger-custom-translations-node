@@ -8,9 +8,9 @@
 
 
 var util = require('util'),
-    twitter = require('twitter'),
-    async = require('async'),
-    translator;
+    ImmortalNTwitter = require('immortal-ntwitter'),
+    translator,
+    initData;
 
 
 /*
@@ -18,57 +18,78 @@ var util = require('util'),
  * called from the main app.js file
  */
 function init(data) {
-    console.log(util.inspect(data));
+    //console.log(util.inspect(data));
+    console.log(now() + " starting node tweet munger...");
     
     // init translator
     translator = require('./translations/' + data['translations']);
+    initData = data;
 
     // init twit
-    var twit = new twitter({
+    var twit = new ImmortalNTwitter.create({
         consumer_key: data['consumer_key'],
         consumer_secret: data['consumer_secret'],
         access_token_key: data['access_token_key'],
         access_token_secret: data['access_token_secret']
     });
-
-    var params = {};
     
-    async.waterfall(
-      [
-        // get the user's ID from their name
-        function(callback){
-            twit.get('/users/show/' + data['originalTwitterAccount'] + '.json', function(data) {
-                callback(null, data);
-            });
-        },
+    // get the user's ID from their name
+    twit.showUser(data['originalTwitterAccount'], function(e, data) {
 
-        // connect to the stream
-        function(data, callback){
-            params.follow = data.id;
-            console.log('user id is: ' + params.follow);
-            twit.stream('statuses/filter', params, function(stream) {
-                callback(null, stream);
-            });
-        },
+        //console.log(util.inspect(data));
+        var userId = data[0].id;
+        console.log(now() + ' found user '+initData['originalTwitterAccount']+' (ID: ' + userId + ')');
 
-        // when a new tweet is detected
-        function(stream, callback){
+        // connect to stream
+        twit.immortalStream('statuses/filter', {follow:userId}, function(stream) {
+            console.log(now() + ' connected to stream, listening for tweets...');
+
+            // when data is recieved
             stream.on('data', function(data) {
-                callback(null, data);
-            });
-        },
+                //console.log(util.inspect(data));
+                console.log(now() + ' tweet detected: ' + data.text);
 
-        // mung and repost
-        function(data, callback){
-            console.log(util.inspect(data));
-            var translated = translator.translate(data.text);
-            twit.updateStatus(translated, function(data) {
-                    callback(null, data);
+                var str = data.text;
+
+                // ignore retweets
+                if (str.indexOf("RT") === 0) {
+                    console.log(now() + ' retweet detected, ignoring...');
+                } else {
+
+                    // don't spam people...
+                    str = str.replace('@', '_');
+                    str = str.replace('#', '_');
+
+                    // tweet translation
+                    var translated = translator.translate(str);
+
+                    // ensure new text length is <= 140 characters
+                    if (str.length > 140) {
+                        str = str.substring(0, 137) + "...";
+                    }
+
+                    // post to twitter
+                    twit.updateStatus(translated, function(e, data) {
+                        //console.log(util.inspect(data));
+                        console.log(now() + ' tweet posted: ' + data.text);
+                    });
+                }
             });
-        }
-      ], function(err, result){
-          console.log(util.inspect(result));
-      });
+        });
+
+    });
+}
+
+
+// format current date and time, for logging
+function now() {
+    var _now = new Date();
+    return (_now.getMonth() + 1) + "/" +
+        _now.getDate() + "/" +
+        _now.getFullYear() + " - " +
+        _now.getHours() + ":" +
+        ((_now.getMinutes() < 10) ? "0" + _now.getMinutes() : _now.getMinutes()) + ":" +
+        ((_now.getSeconds() < 10) ? "0" + _now.getSeconds() : _now.getSeconds());
 }
 
 module.exports.init = init;

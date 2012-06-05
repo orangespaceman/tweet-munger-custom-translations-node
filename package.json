@@ -2,14 +2,12 @@
   "author": "Pete Goodman",
   "name": "Tweet-Munger-Custom-Translations-Node",
   "description": "Mung tweets",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": {
     "type": "git",
     "url": "git://github.com/thegingerbloke/Tweet-Munger-Custom-Translations-Node.git"
   },
   "dependencies": {
-  	"twitter" : "0.1.18",
-  	"async" : "0.1.18"
   },
   "devDependencies": {},
   "optionalDependencies": {},

@@ -243,10 +243,6 @@ function translate(str) {
   
   console.log("original sentence: ", str);
 
-  // don't spam people...
-  str = str.replace('@', '_');
-  str = str.replace('#', '_');
-  
   // replace words
   for (var translation in translations) {
     var re = new RegExp("\\b"+translation+"\\b","gi");
@@ -261,11 +257,6 @@ function translate(str) {
 
   // a nice extra touch
   str = str.replace("/ing/gi", "in'");
-
-  // ensure new text length is <= 140 characters
-  if (str.length > 140) {
-    str = str.substring(0, 137) + "...";
-  }
 
   console.log("munged sentence: ", str);
   

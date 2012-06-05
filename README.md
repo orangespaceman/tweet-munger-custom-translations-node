@@ -16,7 +16,6 @@ Setting up a new TweetMunger account will require a few steps:
 
  * Check out the app from github
  * run `npm install` to install dependencies
- * cd to the node_modules/immortal-ntwitter/ directory and run `npm install` 
  * Duplicate/rename the app.sample.js file, call it app.js (or similar)
  * Open the app.js file, add the correct details for the account you want to mung
  * Once configured, run `node app.js`

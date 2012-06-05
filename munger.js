@@ -8,7 +8,7 @@
 
 
 var util = require('util'),
-    ImmortalNTwitter = require('immortal-ntwitter'),
+    ImmortalNTwitter = require('./immortal-ntwitter'),
     translator,
     initData;
 

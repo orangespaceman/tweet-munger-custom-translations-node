@@ -1,5 +1,5 @@
-var util = require('util'), 
-    EventEmitter = require('events').EventEmitter, 
+var util = require('util'),
+    EventEmitter = require('events').EventEmitter,
     Ntwitter = require('ntwitter');
 
 function ImmortalStream()
@@ -9,56 +9,56 @@ function ImmortalStream()
   this.httpErrorSleepRange = {
     min:     10000,
     max:     320000,
-    current: 10000}
+    current: 10000};
 
   this.networkErrorSleepRange = {
     min:     250,
     max:     16000,
-    current: 250}
+    current: 250};
 }
 util.inherits(ImmortalStream, EventEmitter);
 
 ImmortalStream.create = function()
 {
   return new ImmortalStream();
-}
+};
 
 ImmortalStream.prototype.resetSleeps = function(){
   this.httpErrorSleepRange.current = this.httpErrorSleepRange.min;
   this.networkErrorSleepRange.current = this.networkErrorSleepRange.min;
-}
+};
 
 ImmortalStream.prototype.httpErrorSleep = function( range, callback ){
-  console.log('sleep init');
+  console.log(now() + ' - sleep init');
   var self = this;
   self.sleepAndBackOff(range.current,  function(){
-    self.exponentialBackOff(range)
-  }, callback); 
-} 
+    self.exponentialBackOff(range);
+  }, callback);
+};
 
 ImmortalStream.prototype.tcpipErrorSleep = function(range, callback ){
   var self = this;
   self.sleepAndBackOff(range.current,  function(){
     self.linearBackOff(range);
   }, callback);
-}
+};
 
 ImmortalStream.prototype.linearBackOff = function(range){
   if(range.current < range.max)
     range.current = range.current + range.min;
-}
+};
 
 ImmortalStream.prototype.exponentialBackOff = function(range){
   if(range.current < range.max)
-    range.current = range.current * 2;   
-}
+    range.current = range.current * 2;
+};
 
 ImmortalStream.prototype.sleepAndBackOff = function(delay, backOff, callback ){
   setTimeout( function(){
     backOff();
     callback();
-  }, delay); 
-}
+  }, delay);
+};
 
 
 function ImmortalNTwitter(options)
@@ -79,13 +79,13 @@ ImmortalNTwitter.prototype.immortalStream = function(method, params, callback) {
       stream
       .on('error', function(error){
         if( error != 'http'){
-          console.log('tcp/ip' + error + ' sleep ' + immortalStream.networkErrorSleepRange.current);
-          immortalStream.tcpipErrorSleep(immortalStream.networkErrorSleepRange, function(){ 
-            immortalStream.resurrectStream(); 
-          });  
+          console.log(now() + ' - tcp/ip' + error + ' sleep ' + immortalStream.networkErrorSleepRange.current);
+          immortalStream.tcpipErrorSleep(immortalStream.networkErrorSleepRange, function(){
+            immortalStream.resurrectStream();
+          });
         }else {
-          console.log('http error - sleep ' + immortalStream.httpErrorSleepRange.current);
-          immortalStream.httpErrorSleep(immortalStream.httpErrorSleepRange, function(){ 
+          console.log(now() + ' - http error - sleep ' + immortalStream.httpErrorSleepRange.current);
+          immortalStream.httpErrorSleep(immortalStream.httpErrorSleepRange, function(){
             immortalStream.resurrectStream();
           });
         }
@@ -95,7 +95,7 @@ ImmortalNTwitter.prototype.immortalStream = function(method, params, callback) {
         immortalStream.resurrectStream();
       }).on('end', function(){
         immortalStream.resetSleeps();
-        immortalStream.resurrectStream();  
+        immortalStream.resurrectStream();
       })
       .on('data', function(data){
        immortalStream.emit('data',data);
@@ -110,16 +110,27 @@ ImmortalNTwitter.prototype.immortalStream = function(method, params, callback) {
        immortalStream.emit('scrub_geo',data);
       });
     });
-  }
+  };
 
-  callback(immortalStream);     
+  callback(immortalStream);
   immortalStream.resurrectStream();
 
   return this;
-}
+};
 
 ImmortalNTwitter.create = function( options ){
   return new ImmortalNTwitter( options );
+};
+
+// format current date and time, for logging
+function now() {
+    var _now = new Date();
+    return (_now.getMonth() + 1) + "/" +
+        _now.getDate() + "/" +
+        _now.getFullYear() + " - " +
+        _now.getHours() + ":" +
+        ((_now.getMinutes() < 10) ? "0" + _now.getMinutes() : _now.getMinutes()) + ":" +
+        ((_now.getSeconds() < 10) ? "0" + _now.getSeconds() : _now.getSeconds());
 }
 
 module.exports = ImmortalNTwitter;

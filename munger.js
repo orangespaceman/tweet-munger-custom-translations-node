@@ -10,7 +10,9 @@
 var util = require('util'),
     ImmortalNTwitter = require('./immortal-ntwitter'),
     translator,
-    initData;
+    initData,
+    userId = 0,
+    lastTweetId = 0;
 
 
 /*
@@ -37,23 +39,35 @@ function init(data) {
     twit.showUser(data['originalTwitterAccount'], function(e, data) {
 
         //console.log(util.inspect(data));
-        var userId = data[0].id;
+        userId = data[0].id;
+        lastTweetId = parseInt(data[0].status.id_str, 10);
         console.log(now() + ' found user '+initData['originalTwitterAccount']+' (ID: ' + userId + ')');
+        console.log('last tweet id: ' + lastTweetId);
 
         // connect to stream
         twit.immortalStream('statuses/filter', {follow:userId}, function(stream) {
             console.log(now() + ' connected to stream, listening for tweets...');
 
-            // when data is recieved
+            // when data is received
             stream.on('data', function(data) {
                 //console.log(util.inspect(data));
-                console.log(now() + ' tweet detected: ' + data.text);
+                console.log(now() + ' tweet detected from '+data.user.screen_name+': ' + data.text + ' (ID: '+data.id_str+')');
 
                 var str = data.text;
 
                 // ignore retweets
                 if (str.indexOf("RT") === 0) {
                     console.log(now() + ' retweet detected, ignoring...');
+                
+                // ignore tweets by other users
+                } else if (data.user.screen_name.toLowerCase() !== initData['originalTwitterAccount'].toLowerCase()) {
+                    console.log(now() + ' tweet from another account detected, ignoring...');
+                
+                // ignore tweets older than the last
+                } else if (lastTweetId > parseInt(data.id_str, 10)) {
+                    console.log(now() + ' tweet is too old, ignoring...');
+
+                // OK to mung!
                 } else {
 
                     // don't spam people...
@@ -71,7 +85,9 @@ function init(data) {
                     // post to twitter
                     twit.updateStatus(translated, function(e, data) {
                         //console.log(util.inspect(data));
-                        console.log(now() + ' tweet posted: ' + data.text);
+                        lastTweetId = parseInt(data.id_str, 10);
+
+                        console.log(now() + ' tweet posted: ' + data.text + ' (ID: '+lastTweetId+')');
                     });
                 }
             });

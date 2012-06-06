@@ -9,10 +9,28 @@
 
 var util = require('util'),
     ImmortalNTwitter = require('./immortal-ntwitter'),
+    http = require('http'),
+    server,
+    port = process.env['app_port'] || 8000,
     translator,
     initData,
     userId = 0,
-    lastTweetId = 0;
+    lastTweetId = 0,
+    messages = [];
+
+
+/*
+ * set up server to relay logs
+ */
+server = http.createServer(function (req, res) {
+  for (var counter = 0, length = messages.length; counter < length; counter++) {
+    res.write(messages[counter]+'\n');
+  }
+  res.end();
+});
+server.listen(port);
+console.log('Web server running on port '+port);
+
 
 
 /*
@@ -21,7 +39,7 @@ var util = require('util'),
  */
 function init(data) {
     //console.log(util.inspect(data));
-    console.log(now() + " starting node tweet munger...");
+    log('starting node tweet munger...');
     
     // init translator
     translator = require('./translations/' + data['translations']);
@@ -41,31 +59,31 @@ function init(data) {
         //console.log(util.inspect(data));
         userId = data[0].id;
         lastTweetId = parseInt(data[0].status.id_str, 10);
-        console.log(now() + ' found user '+initData['originalTwitterAccount']+' (ID: ' + userId + ')');
-        console.log('last tweet id: ' + lastTweetId);
+        log('found user '+initData['originalTwitterAccount']+' (ID: ' + userId + ')');
+        log('last tweet id: ' + lastTweetId);
 
         // connect to stream
         twit.immortalStream('statuses/filter', {follow:userId}, function(stream) {
-            console.log(now() + ' connected to stream, listening for tweets...');
+            log('connected to stream, listening for tweets...');
 
             // when data is received
             stream.on('data', function(data) {
                 //console.log(util.inspect(data));
-                console.log(now() + ' tweet detected from '+data.user.screen_name+': ' + data.text + ' (ID: '+data.id_str+')');
+                log('tweet detected from '+data.user.screen_name+': ' + data.text + ' (ID: '+data.id_str+')');
 
                 var str = data.text;
 
                 // ignore retweets
                 if (str.indexOf("RT") === 0) {
-                    console.log(now() + ' retweet detected, ignoring...');
+                    log('retweet detected, ignoring...');
                 
                 // ignore tweets by other users
                 } else if (data.user.screen_name.toLowerCase() !== initData['originalTwitterAccount'].toLowerCase()) {
-                    console.log(now() + ' tweet from another account detected, ignoring...');
+                    log('tweet from another account detected, ignoring...');
                 
                 // ignore tweets older than the last
                 } else if (lastTweetId > parseInt(data.id_str, 10)) {
-                    console.log(now() + ' tweet is too old, ignoring...');
+                    log('tweet is too old, ignoring...');
 
                 // OK to mung!
                 } else {
@@ -87,7 +105,7 @@ function init(data) {
                         //console.log(util.inspect(data));
                         lastTweetId = parseInt(data.id_str, 10);
 
-                        console.log(now() + ' tweet posted: ' + data.text + ' (ID: '+lastTweetId+')');
+                        log('tweet posted: ' + data.text + ' (ID: '+lastTweetId+')');
                     });
                 }
             });
@@ -106,6 +124,14 @@ function now() {
         _now.getHours() + ":" +
         ((_now.getMinutes() < 10) ? "0" + _now.getMinutes() : _now.getMinutes()) + ":" +
         ((_now.getSeconds() < 10) ? "0" + _now.getSeconds() : _now.getSeconds());
+}
+
+
+// log messages
+function log(message) {
+    var str = now() + " - " + message;
+    console.log(str);
+    messages.push(str);
 }
 
 module.exports.init = init;

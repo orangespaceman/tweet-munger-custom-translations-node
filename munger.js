@@ -78,8 +78,8 @@ function init(data) {
                     var translated = translator.translate(str);
 
                     // ensure new text length is <= 140 characters
-                    if (str.length > 140) {
-                        str = str.substring(0, 137) + "...";
+                    if (translated.length > 140) {
+                        translated = translated.substring(0, 137) + "...";
                     }
 
                     // post to twitter

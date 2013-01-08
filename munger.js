@@ -40,7 +40,7 @@ console.log('Web server running on port '+port);
 function init(data) {
     //console.log(util.inspect(data));
     log('starting node tweet munger...');
-    
+
     // init translator
     translator = require('./translations/' + data['translations']);
     initData = data;
@@ -52,7 +52,7 @@ function init(data) {
         access_token_key: data['access_token_key'],
         access_token_secret: data['access_token_secret']
     });
-    
+
     // get the user's ID from their name
     twit.showUser(data['originalTwitterAccount'], function(e, data) {
 
@@ -76,11 +76,11 @@ function init(data) {
                 // ignore retweets
                 if (str.indexOf("RT") === 0) {
                     log('retweet detected, ignoring...');
-                
+
                 // ignore tweets by other users
                 } else if (data.user.screen_name.toLowerCase() !== initData['originalTwitterAccount'].toLowerCase()) {
                     log('tweet from another account detected, ignoring...');
-                
+
                 // ignore tweets older than the last
                 } else if (lastTweetId > parseInt(data.id_str, 10)) {
                     log('tweet is too old, ignoring...');
@@ -89,8 +89,8 @@ function init(data) {
                 } else {
 
                     // don't spam people...
-                    str = str.replace('@', '_');
-                    str = str.replace('#', '_');
+                    str = str.replace(/\@/g,'_');
+                    str = str.replace(/\#/g,'_');
 
                     // tweet translation
                     var translated = translator.translate(str);

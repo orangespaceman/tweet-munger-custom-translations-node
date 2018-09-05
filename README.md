@@ -7,7 +7,7 @@ Translate _(mung)_ tweets from a specific user account through a custom dictiona
 
 Setting up a new TweetMunger account will require a few steps:
 
-  * Create a new [Twitter](http://twitter.com/) account 
+  * Create a new [Twitter](http://twitter.com/) account
   * [Register a new app](https://dev.twitter.com/) with the twitter account - take a note of the four different keys listed below, and make sure the app has read and write access.  (Give it read and write access before creating your access tokens so they share this access, to check see [here](https://twitter.com/settings/applications))
   * Pick a custom translation (or create your own - it just needs to export a 'translate' method which returns a string to tweet) - the default supplied translation is pirate
 
@@ -23,10 +23,10 @@ Setting up a new TweetMunger account will require a few steps:
 
 ### Init options explained
 
-  * *originalTwitterAccount*: The Twitter account we're copying from 
+  * *originalTwitterAccount*: The Twitter account we're copying from
   * *translations*: The custom translation library name to translate to
   * *twitterConsumerKey*, *twitterConsumerSecret*, *twitterConsumerOauthToken* and *twitterConsumerOauthSecret*: Twitter Authorisation tokens -  [Register a new app](https://dev.twitter.com/) for these
-  
+
 ## Creds
 
-Built by Pete (@thegingerbloke), Chris (@csolar) and Dan (@danomurray) at the Lab for the Recently Possible (@L4RP) in Hove, UK, April 2012
+Built by Pete, Chris (@csolar) and Dan (@danomurray) at the Lab for the Recently Possible (@L4RP) in Hove, UK, April 2012
